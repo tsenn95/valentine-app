@@ -3,7 +3,7 @@ import "./App.css";
 
 import askingVideo from "./assets/asking-video.mp4"; 
 import happyVideo from "./assets/accepting-video.mp4";
-import bgMusic from "./assets/bg-music.mp3";
+// Background music removed
 import happyMusic from "./assets/happy-music.mp3";
 import noSound from "./assets/no-sound.mp3";
 
@@ -16,8 +16,7 @@ function App() {
   const [noCount, setNoCount] = useState(0);
   const [yesPressed, setYesPressed] = useState(false);
   
-  // Audio Refs
-  const bgAudioRef = useRef(null);
+  // Refs only for the sounds we are keeping
   const happyAudioRef = useRef(null);
   const noAudioRef = useRef(null);
 
@@ -26,33 +25,28 @@ function App() {
   const handleNoClick = () => {
     setNoCount(noCount + 1);
     
-    // Play the main BG music if it hasn't started (browser bypass)
-    if (bgAudioRef.current) bgAudioRef.current.play();
-
-    // Play "No" sound effect from the start every time
+    // Play "No" sound effect immediately on every click
     if (noAudioRef.current) {
-      noAudioRef.current.currentTime = 0;
-      noAudioRef.current.play();
+      noAudioRef.current.currentTime = 0; // Rewind to start
+      noAudioRef.current.play().catch(e => console.log("Playback blocked:", e));
     }
   };
 
   const handleYesClick = () => {
     setYesPressed(true);
     
-    // Stop background music and "No" sounds
-    if (bgAudioRef.current) bgAudioRef.current.pause();
+    // Stop the "No" sound if it happens to be playing
     if (noAudioRef.current) noAudioRef.current.pause();
 
-    // Play happy music
+    // Start the happy victory music
     if (happyAudioRef.current) {
-      happyAudioRef.current.play();
+      happyAudioRef.current.play().catch(e => console.log("Playback blocked:", e));
     }
   };
 
   return (
     <div className="valentine-container">
-      {/* Hidden Audio Elements */}
-      <audio ref={bgAudioRef} src={bgMusic} loop />
+      {/* Audio Elements - Only Happy and No sound */}
       <audio ref={happyAudioRef} src={happyMusic} loop />
       <audio ref={noAudioRef} src={noSound} />
 
